@@ -31,7 +31,8 @@ not use the same namespace as the parent. No modules are allowed to define own v
 | KASLinkResourceConnector       | 12     | #kasLOC_12000   | #kasLOC_12999 |
 | KASLinkSourcePhysical          | 13     | #kasLOC_13000   | #kasLOC_13999 |
 | KASModuleDart                  | 14     | #kasLOC_14000   | #kasLOC_14999 |
-| _Next available value_         | 15     | #kasLOC_?????   | #kasLOC_????? |
+| KASModuleSocketDisconnect      | 15     | #kasLOC_15000   | #kasLOC_15999 |
+| _Next available value_         | 16     | #kasLOC_?????   | #kasLOC_????? |
 
 # Special namespace
 
