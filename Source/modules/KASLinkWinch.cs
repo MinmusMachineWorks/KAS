@@ -39,7 +39,7 @@ namespace KAS {
 /// </list>
 /// </remarks>
 /// <seealso cref="ILinkJoint.SetCoupleOnLinkMode"/>
-// Next localization ID: #kasLOC_08021.
+// Next localization ID: #kasLOC_08024.
 // ReSharper disable once InconsistentNaming
 // ReSharper disable once ClassWithVirtualMembersNeverInherited.Global
 public class KASLinkWinch : KASLinkSourcePhysical,
@@ -222,6 +222,18 @@ public class KASLinkWinch : KASLinkSourcePhysical,
       description = "A context menu item that presents the length of the currently deployed"
       + " cable.")]
   public string deployedCableLengthMenuInfo = "";
+
+  /// <summary>Target cable extension length in metres, used by the set-length action.</summary>
+  /// <remarks>The UI range max is updated at runtime to match <see cref="cfgMaxCableLength"/>.</remarks>
+  /// <include file="../SpecialDocTags.xml" path="Tags/UIConfigSetting/*"/>
+  [KSPField(guiActive = true, guiActiveEditor = true, isPersistant = true, guiUnits = "m")]
+  [UI_FloatRange(minValue = 0f, maxValue = 100f, stepIncrement = 0.5f)]
+  [LocalizableItem(
+      tag = "#kasLOC_08022",
+      defaultTemplate = "Target cable length",
+      description = "A context menu field to set the target cable extension length in metres,"
+      + " used by the 'Set cable length' action.")]
+  public float targetCableLength = 0f;
   #endregion
 
   #region Context menu events/actions
@@ -359,6 +371,32 @@ public class KASLinkWinch : KASLinkSourcePhysical,
   public virtual void ReleaseCableAction(KSPActionParam unused) {
     ReleaseCableEvent();
   }
+
+  /// <summary>A context menu event that runs the motor to the length configured by <see cref="targetCableLength"/>.</summary>
+  /// <include file="../SpecialDocTags.xml" path="Tags/KspEvent/*"/>
+  [KSPEvent(guiActive = true, guiActiveUnfocused = true)]
+  [LocalizableItem(
+      tag = "#kasLOC_08023",
+      defaultTemplate = "Set cable length",
+      description = "A context menu event that runs the motor to the configured target cable length.")]
+  public virtual void SetCableLengthEvent() {
+    SetCableLengthImpl();
+  }
+
+  /// <summary>Action that runs the motor to the length configured by <see cref="targetCableLength"/>.</summary>
+  /// <remarks>
+  /// The motor extends or retracts at normal speed, consuming electricity, and stops automatically when the deployed
+  /// cable length reaches <see cref="targetCableLength"/>.
+  /// </remarks>
+  /// <include file="../SpecialDocTags.xml" path="Tags/KspAction/*"/>
+  [KSPAction(null)]
+  [LocalizableItem(
+      tag = "#kasLOC_08021",
+      defaultTemplate = "Set cable length",
+      description = "Name of the action that runs the motor to the configured target cable length.")]
+  public virtual void SetCableLengthAction(KSPActionParam unused) {
+    SetCableLengthImpl();
+  }
   #endregion
 
   #region IWinchControl properties
@@ -396,6 +434,10 @@ public class KASLinkWinch : KASLinkSourcePhysical,
   #endregion
 
   #region Local fields & properties
+  /// <summary>Cable length the motor should stop at when executing the set-length action.</summary>
+  /// <remarks><c>float.NaN</c> means no target is active.</remarks>
+  float _motorTargetCableLength = float.NaN;
+
   /// <summary>Sound to play when the motor is active.</summary>
   /// <seealso cref="motorCurrentSpeed"/>
   AudioSource _sndMotor;
@@ -410,6 +452,18 @@ public class KASLinkWinch : KASLinkSourcePhysical,
   #endregion
 
   #region KASLikSourcePhysical overrides
+  /// <inheritdoc/>
+  public override void OnStart(StartState state) {
+    base.OnStart(state);
+    // Update the slider range to match this part's actual cable length, now that cableJoint is ready.
+    var maxLen = cfgMaxCableLength;
+    if (maxLen > float.Epsilon) {
+      ((UI_FloatRange)Fields[nameof(targetCableLength)].uiControlEditor).maxValue = maxLen;
+      ((UI_FloatRange)Fields[nameof(targetCableLength)].uiControlFlight).maxValue = maxLen;
+      targetCableLength = Mathf.Clamp(targetCableLength, 0, maxLen);
+    }
+  }
+
   /// <inheritdoc cref="IKSPDevModuleInfo.GetModuleTitle" />
   public override string GetModuleTitle() {
     return ModuleTitleInfo;
@@ -567,6 +621,7 @@ public class KASLinkWinch : KASLinkSourcePhysical,
   /// The motor speed instantly becomes zero, it may trigger the physical effects.
   /// </remarks>
   protected void KillMotor() {
+    _motorTargetCableLength = float.NaN;
     motorTargetSpeed = 0;
     motorCurrentSpeed = 0;
     UpdateContextMenu();
@@ -574,6 +629,16 @@ public class KASLinkWinch : KASLinkSourcePhysical,
   #endregion
 
   #region Local utility methods
+  /// <summary>Drives the motor toward <see cref="targetCableLength"/>, shared by the event and action.</summary>
+  void SetCableLengthImpl() {
+    var target = Mathf.Clamp(targetCableLength, 0, cfgMaxCableLength);
+    if (Mathf.Approximately(target, cableJoint.deployedCableLength)) {
+      return;
+    }
+    _motorTargetCableLength = target;
+    SetMotor(target > cableJoint.deployedCableLength ? float.PositiveInfinity : float.NegativeInfinity);
+  }
+
   /// <summary>Updates the winch connector cable according to the current motor movements.</summary>
   /// <remarks>This method is only called when the motor is consuming electricity.</remarks>
   void UpdateMotor() {
@@ -595,7 +660,12 @@ public class KASLinkWinch : KASLinkSourcePhysical,
     var gotEnergy = part.RequestResource(StockResourceNames.ElectricCharge, powerDemand);
     if (Mathd.AreSame(gotEnergy, powerDemand)) {
       SetCableLength(cableJoint.deployedCableLength + motorCurrentSpeed * TimeWarp.fixedDeltaTime);
-      if (motorCurrentSpeed > 0
+      if (!float.IsNaN(_motorTargetCableLength)
+          && ((motorCurrentSpeed > 0 && cableJoint.deployedCableLength >= _motorTargetCableLength)
+              || (motorCurrentSpeed < 0 && cableJoint.deployedCableLength <= _motorTargetCableLength))) {
+        SetCableLength(_motorTargetCableLength);
+        KillMotor();  // Also clears _motorTargetCableLength.
+      } else if (motorCurrentSpeed > 0
           && cableJoint.deployedCableLength >= cableJoint.cfgMaxCableLength) {
         KillMotor();
         SetCableLength(float.PositiveInfinity);
