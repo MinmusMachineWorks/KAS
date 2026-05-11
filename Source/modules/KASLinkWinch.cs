@@ -252,17 +252,6 @@ public class KASLinkWinch : KASLinkSourcePhysical,
     ControllerWinchRemote.ToggleGui(true);
   }
 
-  /// <summary>Overrides the base event to also expose it as an action group action.</summary>
-  /// <include file="../SpecialDocTags.xml" path="Tags/KspEvent/*"/>
-  /// <include file="../SpecialDocTags.xml" path="Tags/KspAction/*"/>
-  [KSPAction(null)]
-  [LocalizableItem(
-      tag = "#kasLOC_13009",
-      defaultTemplate = "Detach connector",
-      description = "Name of the action group action that disconnects the winch connector from the linked port.")]
-  public override void DetachConnectorEvent() {
-    base.DetachConnectorEvent();
-  }
 
   /// <summary>A context menu item that starts/stops extending the cable.</summary>
   /// <remarks>
@@ -410,6 +399,16 @@ public class KASLinkWinch : KASLinkSourcePhysical,
     SetCableLengthImpl();
   }
 
+  /// <summary>Action that detaches the winch connector from the linked port.</summary>
+  /// <include file="../SpecialDocTags.xml" path="Tags/KspAction/*"/>
+  [KSPAction(null)]
+  [LocalizableItem(
+      tag = "#kasLOC_13009",
+      defaultTemplate = "Detach connector",
+      description = "Name of the action group action that detaches the winch connector from the linked port.")]
+  public virtual void DetachConnectorAction(KSPActionParam unused) {
+    DetachConnectorEvent();
+  }
   #endregion
 
   #region IWinchControl properties
