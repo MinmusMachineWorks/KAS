@@ -586,6 +586,8 @@ public class KASLinkWinch : KASLinkSourcePhysical,
   #region IWinchControl implementation
   /// <inheritdoc/>
   public void SetMotor(float targetSpeed) {
+    // Any direct motor command (menu, remote GUI, action group) cancels a "Set cable length" target.
+    _motorTargetCableLength = float.NaN;
     if (targetSpeed > 0 && cableJoint.deployedCableLength >= cableJoint.cfgMaxCableLength) {
       ShowStatusMessage(MaxLengthReachedMsg.Format(cableJoint.cfgMaxCableLength));
       return;
@@ -647,8 +649,22 @@ public class KASLinkWinch : KASLinkSourcePhysical,
     if (Mathf.Approximately(target, cableJoint.deployedCableLength)) {
       return;
     }
-    _motorTargetCableLength = target;
+    // At either end, run the motor without a target, so the normal end-of-travel handling applies:
+    // fully retracted locks the connector, fully extended releases the cable.
+    if (target <= 0) {
+      SetMotor(float.NegativeInfinity);
+      return;
+    }
+    if (target >= cfgMaxCableLength) {
+      SetMotor(float.PositiveInfinity);
+      return;
+    }
     SetMotor(target > cableJoint.deployedCableLength ? float.PositiveInfinity : float.NegativeInfinity);
+    // Set after SetMotor, which clears it. SetMotor can refuse to start (e.g. a locked connector can't
+    // retract); don't leave a stale target behind then.
+    if (Mathf.Abs(motorTargetSpeed) > float.Epsilon) {
+      _motorTargetCableLength = target;
+    }
   }
 
   /// <summary>Updates the winch connector cable according to the current motor movements.</summary>
