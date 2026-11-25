@@ -1,0 +1,52 @@
+{
+  "spec_version": "v1.4",
+  "identifier": "KAS-MM",
+  "name": "Kerbal Attachment System (MMW)",
+  "abstract": "Winches, struts, and pipes to connect vessels in EVA without docking them, with action groups for winches and the JS-1 socket",
+  "description": "Minmus Machine Works fork of https://github.com/ihsoft/KAS. Adds action groups to set a winch's cable length, detach a winch connector, and disconnect a link from the JS-1 joint socket (from duclingg/KAS). It replaces the official KAS package (provides and conflicts with it), so mods that depend on KAS still install.",
+  "author": [
+    "IgorZ"
+  ],
+  "license": "public-domain",
+  "release_status": "stable",
+  "ksp_version_min": "1.11.0",
+  "ksp_version_max": "1.99.99",
+  "resources": {
+    "homepage": "https://github.com/MinmusMachineWorks/KAS",
+    "repository": "https://github.com/MinmusMachineWorks/KAS",
+    "bugtracker": "https://github.com/MinmusMachineWorks/KAS/issues",
+    "x_upstream": "https://github.com/ihsoft/KAS"
+  },
+  "provides": [
+    "KAS"
+  ],
+  "conflicts": [
+    {
+      "name": "KAS"
+    }
+  ],
+  "depends": [
+    {
+      "name": "ModuleManager"
+    }
+  ],
+  "recommends": [
+    {
+      "name": "EasyVesselSwitch"
+    },
+    {
+      "name": "CommunityCategoryKit"
+    }
+  ],
+  "suggests": [
+    {
+      "name": "KIS"
+    }
+  ],
+  "install": [
+    {
+      "find": "KAS",
+      "install_to": "GameData"
+    }
+  ]
+}

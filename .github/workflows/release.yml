@@ -1,0 +1,60 @@
+name: Build & release
+
+# Every push and PR: compile KAS.dll, package the mod and validate its .ckan
+# (dry run, uploaded as an artifact).
+# A v*.*.* tag: also create the GitHub release and publish the .ckan to KSP-Mods-CKAN.
+# Versions are upstream's plus a fourth number for our fixes, e.g. v1.12.0.1.
+
+on:
+  push:
+    branches: ['**']
+    tags: ['v*.*.*']
+  pull_request:
+
+jobs:
+  build:
+    # Pinned, not ubuntu-latest (same image KSPBuildTools uses).
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      # The compile action doesn't set up .NET itself.
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.x'
+
+      # KAS references only KSP (KSPLibs, downloaded by the action) and the prebuilt
+      # DLLs in Binaries/, so no CKAN dependencies to install.
+      # Builds KAS.dll into Plugins/ (see Directory.Build.props).
+      - uses: KSPModdingLibs/KSPBuildTools/.github/actions/compile@1.1.1
+        with:
+          solution-file-path: Source/KAS.csproj
+
+      # Lay out GameData/KAS as upstream's release does (Tools/release_setup.json), minus
+      # the bundled ModuleManager, CommunityCategoryKit and MiniAVC (CKAN installs those).
+      - name: Stage GameData/KAS
+        run: |
+          OUT="$RUNNER_TEMP/build/GameData/KAS"
+          mkdir -p "$OUT/Plugins"
+          cp -r LICENSE.md Lang Models Parts Patches Sounds Textures settings.cfg "$OUT/"
+          cp Plugins/KAS.dll KAS.version "$OUT/Plugins/"
+          find Binaries -maxdepth 1 -type f ! -name 'MiniAVC-V2.*' -exec cp {} "$OUT/Plugins/" \;
+          find "$RUNNER_TEMP/build" -type f | sort | sed "s#^$RUNNER_TEMP/build/##" | grep -E 'Plugins/|\.cfg$' | grep -v '/Parts/'
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: kas-package
+          path: ${{ runner.temp }}/build
+          if-no-files-found: error
+          retention-days: 7
+
+  release:
+    needs: build
+    permissions:
+      contents: write
+    uses: MinmusMachineWorks/KSP-Mods-CKAN/.github/workflows/release-mod.yml@main
+    with:
+      package-dir: package
+      build-artifact: kas-package
+      publish: ${{ startsWith(github.ref, 'refs/tags/v') }}
+    secrets: inherit

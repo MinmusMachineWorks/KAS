@@ -1,4 +1,17 @@
-﻿# Kerbal Attachment System (KAS)
+﻿> **Minmus Machine Works fork.** This is a fork of [ihsoft/KAS](https://github.com/ihsoft/KAS). It adds action
+> groups from [duclingg/KAS](https://github.com/duclingg/KAS): set a winch's cable length (to the new "Target cable
+> length" slider), detach a winch connector, and disconnect a link from the JS-1 joint socket. Install it through
+> CKAN as `KAS-MM`, after adding the [Minmus Machine Works repository](https://github.com/MinmusMachineWorks/KSP-Mods-CKAN).
+> It replaces the official `KAS` package. Releases are built by `.github/workflows/release.yml` from `v*.*.*`
+> tags. CKAN metadata lives in `ckan/metadata.json`.
+>
+> **Building.** The project uses [KSPBuildTools](https://github.com/KSPModdingLibs/KSPBuildTools) and builds
+> with `dotnet build Source/KAS.csproj`. `KAS.dll` lands in `Plugins/` (gitignored). `KAS-API-v2.dll` and
+> `KSPDev_Utils.2.7.dll` are upstream's prebuilt copies in `Binaries/`. KSPBuildTools finds a Steam KSP install
+> by itself. If yours is elsewhere, or on macOS, create a gitignored `Directory.Build.props.user` that sets
+> `KSPBT_GameRoot` and `KSPBT_ManagedPath`.
+
+# Kerbal Attachment System (KAS)
 
 This mod is another extension to the EVA duty of the kerbonauts. Now they can link different vessels together. Why linking? Well, how about transferring resources without docking? Or maybe two vessels need to stay together while not docked. Even more, this mod has active parts that can work as  winches!
 
