@@ -48,3 +48,8 @@ KAS_*.zip
 *.pyc
 *.wrk.*
 *.wrk
+
+# MinmusMachineWorks fork: build output and local build settings
+/Plugins/
+obj/
+Directory.Build.props.user

@@ -1,0 +1,32 @@
+<Project>
+
+  <!-- Machine-specific overrides (gitignored). See README "Building". -->
+  <Import Project="$(MSBuildThisFileDirectory)Directory.Build.props.user"
+          Condition="Exists('$(MSBuildThisFileDirectory)Directory.Build.props.user')" />
+
+  <PropertyGroup>
+    <TargetFramework>net48</TargetFramework>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <Prefer32Bit>false</Prefer32Bit>
+
+    <!-- The repo root is the mod folder (GameData/KAS in a release); KAS.dll goes to Plugins/. -->
+    <KSPBT_ModRoot>$(MSBuildThisFileDirectory)</KSPBT_ModRoot>
+    <KSPBT_ModPluginFolder>Plugins/</KSPBT_ModPluginFolder>
+
+    <!-- KAS references only KSP and the prebuilt DLLs in Binaries/; no CKAN mods. -->
+    <KSPBT_InstallCKANDependencies>false</KSPBT_InstallCKANDependencies>
+
+    <!-- Keep Properties/AssemblyInfo.cs as upstream has it (it already has KSPAssembly("KAS", 1, 12)). -->
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <KSPBT_GenerateAssemblyAttribute>false</KSPBT_GenerateAssemblyAttribute>
+    <KSPBT_GenerateDependencyAttributes>false</KSPBT_GenerateDependencyAttributes>
+
+    <!-- KAS.version is committed; the release workflow stamps its version and URLs. -->
+    <KSPBT_GenerateVersionFile>false</KSPBT_GenerateVersionFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="KSPBuildTools" Version="1.1.1" />
+  </ItemGroup>
+
+</Project>

@@ -1,168 +1,26 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTargets="Build">
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- Built with KSPBuildTools (see ../Directory.Build.props). Upstream's old-style project
+       referenced KSP through a Q:\ virtual drive and only built on Windows. -->
   <PropertyGroup>
-    <ProjectGuid>{5DD0400D-C1BA-4ED9-AE7B-C4F3DCB964B1}</ProjectGuid>
-    <ProjectTypeGuids>{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
-    <Configuration Condition=" '$(Configuration)' == '' ">Release</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <OutputType>Library</OutputType>
     <RootNamespace>KAS</RootNamespace>
     <AssemblyName>KAS</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
-    <TargetFrameworkProfile />
-    <NoWin32Manifest>False</NoWin32Manifest>
-    <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
-    <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
-    <NoStdLib>False</NoStdLib>
-    <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
-    <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
-    <WarningLevel>4</WarningLevel>
-    <RunCodeAnalysis>False</RunCodeAnalysis>
-    <SignAssembly>False</SignAssembly>
-    <DelaySign>False</DelaySign>
-    <DocumentationFile>bin\Release\KAS.xml</DocumentationFile>
     <LangVersion>9</LangVersion>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Platform)' == 'AnyCPU' ">
     <PlatformTarget>x64</PlatformTarget>
-    <BaseAddress>4194304</BaseAddress>
-    <RegisterForComInterop>False</RegisterForComInterop>
-    <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
-    <FileAlignment>4096</FileAlignment>
+    <!-- AssemblyInfo.cs uses AssemblyVersion("1.12.*"), which needs a non-deterministic build. -->
+    <Deterministic>false</Deterministic>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
-    <OutputPath>bin\Debug\</OutputPath>
-    <DebugSymbols>True</DebugSymbols>
-    <DebugType>Full</DebugType>
-    <Optimize>False</Optimize>
-    <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <BaseIntermediateOutputPath>obj\</BaseIntermediateOutputPath>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
-    <OutputPath>bin\Release\</OutputPath>
-    <DebugSymbols>False</DebugSymbols>
-    <DebugType>PdbOnly</DebugType>
-    <Optimize>True</Optimize>
-    <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
-    <DefineConstants>TRACE</DefineConstants>
-    <BaseIntermediateOutputPath>obj\</BaseIntermediateOutputPath>
-    <StartAction>Project</StartAction>
-  </PropertyGroup>
-  <ItemGroup>
-    <Reference Include="Assembly-CSharp">
-      <HintPath>Q:\KSP_x64_Data\Managed\Assembly-CSharp.dll</HintPath>
-    </Reference>
-    <Reference Include="Assembly-CSharp-firstpass">
-      <HintPath>Q:\KSP_x64_Data\Managed\Assembly-CSharp-firstpass.dll</HintPath>
-    </Reference>
-    <Reference Include="KAS-API-v2, Version=2.0.7239.35367, Culture=neutral, PublicKeyToken=null">
-      <HintPath>..\Binaries\KAS-API-v2.dll</HintPath>
-    </Reference>
-    <Reference Include="KSPDev_Utils.2.7, Version=2.7.0.0, Culture=neutral, PublicKeyToken=null">
-      <HintPath>..\Binaries\KSPDev_Utils.2.7.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.CSharp">
-      <RequiredTargetFramework>4.0</RequiredTargetFramework>
-    </Reference>
-    <Reference Include="System">
-      <HintPath>Q:\KSP_x64_Data\Managed\System.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Core">
-      <HintPath>Q:\KSP_x64_Data\Managed\System.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.AudioModule">
-      <HintPath>Q:\KSP_x64_Data\Managed\UnityEngine.AudioModule.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.CoreModule">
-      <HintPath>Q:\KSP_x64_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.IMGUIModule">
-      <HintPath>Q:\KSP_x64_Data\Managed\UnityEngine.IMGUIModule.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.InputLegacyModule">
-      <HintPath>Q:\KSP_x64_Data\Managed\UnityEngine.InputLegacyModule.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.PhysicsModule">
-      <HintPath>Q:\KSP_x64_Data\Managed\UnityEngine.PhysicsModule.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.TextRenderingModule">
-      <HintPath>Q:\KSP_x64_Data\Managed\UnityEngine.TextRenderingModule.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.UI">
-      <HintPath>Q:\KSP_x64_Data\Managed\UnityEngine.UI.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="api_impl" />
-    <Folder Include="controllers" />
-    <Folder Include="modules" />
-    <Folder Include="debug" />
-    <Folder Include="compatibility" />
-    <Folder Include="Properties" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="api_impl\AttachNodesUtilsImpl.cs" />
-    <Compile Include="api_impl\CommonConfigImpl.cs" />
-    <Compile Include="api_impl\JointUtilsImpl.cs" />
-    <Compile Include="api_impl\KASAPILauncher.cs" />
-    <Compile Include="api_impl\KasEventsImpl.cs" />
-    <Compile Include="api_impl\KasLinkEventImpl.cs" />
-    <Compile Include="api_impl\LinkUtilsImpl.cs" />
-    <Compile Include="api_impl\PhysicsUtilsImpl.cs" />
-    <Compile Include="compatibility\PatchFilesProcessor.cs" />
-    <Compile Include="controllers\ControllerPartEditorTool.cs" />
-    <Compile Include="controllers\ControllerWinchRemote.cs" />
-    <Compile Include="debug\KASDebugAdjustableAttribute.cs" />
-    <Compile Include="modules\AbstractJoint.cs" />
-    <Compile Include="modules\AbstractLinkPeer.cs" />
-    <Compile Include="modules\AbstractPipeRenderer.cs" />
-    <Compile Include="modules\KASInternalPhysicalConnector.cs" />
-    <Compile Include="modules\KASJointCableBase.cs" />
-    <Compile Include="modules\KASJointRigid.cs" />
-    <Compile Include="modules\AbstractProceduralModel.cs" />
-    <Compile Include="modules\KASInternalBrokenJointListener.cs" />
-    <Compile Include="modules\KASLinkResourceConnector.cs" />
-    <Compile Include="modules\KASLinkSourceInteractive.cs" />
-    <Compile Include="modules\KASLinkSourcePhysical.cs" />
-    <Compile Include="modules\KASLinkTargetKerbal.cs" />
-    <Compile Include="modules\KASLinkSourceBase.cs" />
-    <Compile Include="modules\KASLinkTargetBase.cs" />
-    <Compile Include="modules\KASModuleDart.cs" />
-    <Compile Include="modules\KASModuleSocketDisconnect.cs" />
-    <Compile Include="modules\KASRendererBezierPipe.cs" />
-    <Compile Include="modules\KASRendererTelescopicPipe.cs" />
-    <Compile Include="modules\KASJointTowBar.cs" />
-    <Compile Include="modules\KASRendererPipe.cs" />
-    <Compile Include="modules\KASJointTwoEndsSphere.cs" />
-    <Compile Include="modules\KASLinkWinch.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="KSPAPI_HelpIndex.xml" />
-    <None Include="KSPDevUtilsAPI_HelpIndex.xml" />
-    <None Include="SpecialDocTags.xml" />
-    <None Include="SpecialDocTagsExpand.xslt">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="Unity3D_HelpIndex.xml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="KSPDev_candidates\README.md" />
-  </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <PropertyGroup>
-    <PostBuildEvent>IF EXIST "Q:\GameData\KAS" xcopy "$(TargetPath)" "Q:\GameData\KAS\Plugins\" /Y
-IF EXIST "Q:\GameData\KAS" xcopy "$(TargetDir)KSPDev_Utils*.dll" "Q:\GameData\KAS\Plugins\" /Y
-IF EXIST "Q:\GameData\KAS" xcopy "$(TargetDir)KAS-API-v2.*" "Q:\GameData\KAS\Plugins\" /Y
-"$(ProjectDir)..\Tools\msxsl.exe" -t "KAS.xml" "SpecialDocTagsExpand.xslt" -o KAS.xml
 
-</PostBuildEvent>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <OutputPath>bin\Debug\</OutputPath>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <OutputPath>bin\Release\</OutputPath>
-  </PropertyGroup>
+  <ItemGroup>
+    <!-- Prebuilt, shipped from Binaries/ as upstream does; not copied by the build. -->
+    <Reference Include="KAS-API-v2">
+      <HintPath>../Binaries/KAS-API-v2.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="KSPDev_Utils.2.7">
+      <HintPath>../Binaries/KSPDev_Utils.2.7.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+  </ItemGroup>
+
 </Project>
